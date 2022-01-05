@@ -68,7 +68,7 @@ public class BlobController : MonoBehaviour
         }
         else
         {
-            animationEvent.functionName = "CopyBlob";
+            animationEvent.functionName = "CopySelf";
             foreach (AnimationClip clip in animator.runtimeAnimatorController.animationClips)
                 if (clip.name == "Squash")
                 {
@@ -87,11 +87,12 @@ public class BlobController : MonoBehaviour
         float x = (currentPos.y - currentPos.x) * 0.5f;
         float y = (currentPos.y + currentPos.x + 1) * 0.25f;
         transform.position = new Vector2(x, y);
-        Debug.Log("ShouldMove");
+        GameManager.TakeOver();
     }
-    void CopyBlob()
+    void CopySelf()
     {
         GameManager.CopyBlob();
+        GameManager.TakeOver();
     }
     void Select()
     {

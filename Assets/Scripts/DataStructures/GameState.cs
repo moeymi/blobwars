@@ -62,14 +62,14 @@ public class GameState
             newState.lastAction = BlobAction.Copy;
         }
         newState.changedBlobs = new List<Vector2Int>();
-        for (int i = destinationPos.x - 2; i <= destinationPos.x + 2; i++)
+        for (int i = destinationPos.x - 1; i <= destinationPos.x + 2; i++)
         {
-            for (int j = destinationPos.y - 2; j <= destinationPos.y + 2; j++)
+            for (int j = destinationPos.y - 1; j <= destinationPos.y + 2; j++)
             {
-                if (CheckMoveAllowed(destinationPos, new Vector2Int(i,j)) && gameGrid[i, j] != 0 && gameGrid[i, j] != gameGrid[destinationPos.x, destinationPos.y])
+                if (i >= 0 && i < n && j >= 0 && j < m && newState.gameGrid[i, j] != 0 && newState.gameGrid[i, j] != newState.gameGrid[destinationPos.x, destinationPos.y])
                 {
-                    gameGrid[i, j] = gameGrid[destinationPos.x, destinationPos.y];
-                    changedBlobs.Add(new Vector2Int(i, j));
+                    newState.gameGrid[i, j] = gameGrid[destinationPos.x, destinationPos.y];
+                    newState.changedBlobs.Add(new Vector2Int(i, j));
                 }
             }
         }

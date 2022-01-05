@@ -46,8 +46,6 @@ public class GameManager : MonoBehaviour
         Vector2Int originalPos = state.FromPosition;
         Vector2Int destinationPos = state.ToPosition;
         currentGameState = state;
-        Debug.Log(state.FromPosition);
-        Debug.Log(state.ToPosition);
         if (state.LastAction == BlobAction.Copy)
         {
             //Squash Original Blob
@@ -59,19 +57,6 @@ public class GameManager : MonoBehaviour
             blobs[state.FromPosition].MakeMove(state.ToPosition, state.LastAction);
             blobs.Add(state.ToPosition, blobs[state.FromPosition]);
             blobs.Remove(state.FromPosition);
-        }
-        int[,] gameGrid = state.GameGrid;
-        List<Vector2Int> changedBlobs = state.ChangedBlobs;
-        foreach(Vector2Int pos in changedBlobs)
-        {
-            if (blobs.ContainsKey(pos))
-            {
-                Destroy(blobs[pos].gameObject);
-                GameObject newBlob = Instantiate(blobPrefabs[currentGameState.GetBlobAtPosition(pos)]);
-                BlobController controller = newBlob.GetComponent<BlobController>();
-                controller.Initialize(pos);
-                blobs.Add(pos, controller);
-            }
         }
     }
     public static void ShowAvailableMoves(Vector2Int position)
@@ -90,6 +75,23 @@ public class GameManager : MonoBehaviour
         controller.Initialize(currentGameState.ToPosition);
         blobs.Add(currentGameState.ToPosition, controller);
         Debug.Log(currentGameState.ToPosition);
+    }
+
+    public static void TakeOver()
+    {
+        List<Vector2Int> changedBlobs = currentGameState.ChangedBlobs;
+        foreach (Vector2Int pos in changedBlobs)
+        {
+            if (blobs.ContainsKey(pos))
+            {
+                Debug.Log("Here : " + pos.ToString());
+                Destroy(blobs[pos].gameObject);
+                GameObject newBlob = Instantiate(blobPrefabs[currentGameState.GetBlobAtPosition(currentGameState.ToPosition)]);
+                BlobController controller = newBlob.GetComponent<BlobController>();
+                controller.Initialize(pos);
+                blobs[pos] = controller;
+            }
+        }
     }
 
     public static GameState CurrentGamestate
