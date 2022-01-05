@@ -121,7 +121,7 @@ public class GameState
     {
         List<GameState> states = new List<GameState>();
 
-        int player = gameGrid[fromPosition.x, fromPosition.y] ; 
+        int player = gameGrid[fromPosition.x, fromPosition.y] == 1 ? -1 : 1 ; 
 
         for (int i =0; i < n; i++)
         {
@@ -165,18 +165,17 @@ public class GameState
 
     public int evaluate()
     {
-        int player = gameGrid[fromPosition.x, fromPosition.y];
-        int myUnits = 0;
-        int enemyUnits = 0;
+        int playerBlobs = 0;
+        int enemyBlobs = 0;
         //getNumberOfBlobsForEachPlayer
         for(int i = 0 ; i<n ; i++)
         {
             for(int j = 0; j<m ; j++)
             {
-                if (gameGrid[i, j] == player)
-                    myUnits++;
-                else if (gameGrid[i, j] == player*-1)
-                    enemyUnits++;
+                if (gameGrid[i, j] == 1)
+                    playerBlobs++;
+                else if (gameGrid[i, j] == -1)
+                    enemyBlobs++;
             }
         }
 
@@ -189,9 +188,9 @@ public class GameState
             {
                 if(gameGrid[i,j] == 0)
                 {
-                    if (j != 0 && gameGrid[i, j-1] == player)
+                    if (j != 0 && gameGrid[i, j-1] == 1)
                         Gaps++;
-                    if (j != m - 1 && gameGrid[i, j+1] == player)
+                    if (j != m - 1 && gameGrid[i, j+1] == -1)
                         Gaps++;
                 }
             }
@@ -203,16 +202,15 @@ public class GameState
             {
                 if (gameGrid[i, j] == 0)
                 {
-                    if (i != 0 && gameGrid[i -1, j] == player)
+                    if (i != 0 && gameGrid[i -1, j] == 1)
                         Gaps++;
-                    if (i != n - 1 && gameGrid[i+1, j] == player)
+                    if (i != n - 1 && gameGrid[i+1, j] == -1)
                         Gaps++;
                 }
             }
         }
-        Debug.Log(Gaps);
-
-        return myUnits - enemyUnits;
+        //Debug.Log(Gaps);
+        return enemyBlobs - playerBlobs;
 
     }
 }

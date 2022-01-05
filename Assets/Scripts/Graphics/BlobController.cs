@@ -11,10 +11,13 @@ public class BlobController : MonoBehaviour
     bool isEnemy;
     [SerializeField]
     bool isSelected = false;
+    [SerializeField]
+    bool shouldMove = false;
     Animator animator;
     SpriteRenderer spriteRenderer;
     Vector2Int currentPos;
     Tilemap tileMap;
+    BlobAction? action;
 
     #endregion
 
@@ -29,6 +32,7 @@ public class BlobController : MonoBehaviour
         animator.speed = 1.5f;
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sortingOrder = 2000 - (int)(currentPos.y / 0.25f);
+        action = null;
     }
 
     private void Awake()
@@ -38,14 +42,18 @@ public class BlobController : MonoBehaviour
 
     public void Update()
     {
+        if (shouldMove && action != null)
+        {
+            AIAction();
+            shouldMove = false;
+            action = null;
+        }
         if (Input.GetMouseButton(0) && isSelected)
         {
-            Debug.Log("Pressed");
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int newPos = tileMap.WorldToCell(mousePosition);
             GameManager.TryMove(currentPos, new Vector2Int(newPos.y, newPos.x));
             UnSelect();
-            GameManager.AIController.AIMakeMove(); 
         }
     }
 
@@ -57,6 +65,8 @@ public class BlobController : MonoBehaviour
         }
         currentPos = position;
         AnimationEvent animationEvent = new AnimationEvent();
+
+        this.action = action;
         if (action == BlobAction.Move)
         {
             animationEvent.functionName = "MoveSelf";
@@ -82,6 +92,16 @@ public class BlobController : MonoBehaviour
     private void OnMouseUp()
     {
         Select();
+    }
+
+    void AIAction()
+    {
+        if (action == BlobAction.Copy)
+        {
+            CopySelf();
+        }
+        else
+            MoveSelf();
     }
     void MoveSelf()
     {

@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class AI_Controller
 {
-    async public void AIMakeMove()
+    async public void AIMakeMove(GameState state)
     {
         float stTime = (Time.realtimeSinceStartup);
+        await Task.Delay(670);
         Debug.LogWarning("Start searching ...");
-
         Node selectedNode = null;
         await Task.Run( async () =>
         {
-            selectedNode = await MinMaxSolver(1, new Node (GameManager.CurrentGamestate , null), true);
+            selectedNode = await MinMaxSolver(1, new Node (state , null), true);
         });
 
         if (selectedNode != null)
@@ -21,6 +21,7 @@ public class AI_Controller
 
         Debug.LogWarning("FINISH");
         Debug.LogWarning("Time = " + (Time.realtimeSinceStartup - stTime));
+
     }
 
     async Task<Node> MinMaxSolver(int depth , Node currentState , bool AI_Trun )
@@ -28,7 +29,7 @@ public class AI_Controller
         if (depth == 0)
             return null;
         return await Task.Run(async () =>
-       {
+        {
            List<GameState> nextStates = currentState.state.getNextStates();
            List<Node> nextNodes = new List<Node>();
            foreach (GameState state in nextStates)
@@ -37,7 +38,7 @@ public class AI_Controller
                Node optimalState = await MinMaxSolver(depth - 1, newNode, !AI_Trun);
                if (optimalState == null)
                {
-                   newNode.state.evaluate();
+                   newNode.cost = newNode.state.evaluate();
                }
                else
                {
@@ -48,12 +49,12 @@ public class AI_Controller
            }
 
            Node selectedNode = new Node();
-           int compareValue = AI_Trun ? int.MaxValue : int.MinValue;
+           int compareValue = AI_Trun ? int.MinValue : int.MaxValue;
            foreach (Node node in nextNodes)
            {
                if (AI_Trun)
                {
-                   if (node.cost < compareValue)
+                   if (node.cost > compareValue)
                    {
                        selectedNode = node;
                        compareValue = selectedNode.cost;
@@ -61,7 +62,7 @@ public class AI_Controller
                }
                else
                {
-                   if (node.cost > compareValue)
+                   if (node.cost < compareValue)
                    {
                        selectedNode = node;
                        compareValue = selectedNode.cost;
@@ -80,7 +81,7 @@ public class AI_Controller
         public Node (GameState currentState , Node prevoiusNode)
         {
             this.state = currentState;
-            this.prevoiusNode = prevoiusNode; 
+            this.prevoiusNode = prevoiusNode;
         }
     } 
 }

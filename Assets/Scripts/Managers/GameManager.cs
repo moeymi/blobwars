@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
         {
             GameState newState = currentGameState.MakeMove(originalPos, destinationPos, false);
             RunIntoState(newState);
+            AIController.AIMakeMove(currentGameState);
         }
     }
 
@@ -59,6 +60,7 @@ public class GameManager : MonoBehaviour
             blobs.Add(state.ToPosition, blobs[state.FromPosition]);
             blobs.Remove(state.FromPosition);
         }
+        Debug.Log(currentGameState.FromPosition + " " + currentGameState.ToPosition);
     }
     public static void ShowAvailableMoves(Vector2Int position)
     {
