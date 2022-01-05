@@ -61,7 +61,16 @@ public class GameState
             newState.SetBlob(destinationPos, isEnemy);
             newState.lastAction = BlobAction.Copy;
         }
-        
+        for (int i = destinationPos.x - 2; i <= destinationPos.x + 2; i++)
+        {
+            for (int j = destinationPos.y - 2; j <= destinationPos.y + 2; j++)
+            {
+                if (CheckMoveAllowed(destinationPos, new Vector2Int(i,j)) && gameGrid[i, j] != 0 && gameGrid[i, j] != gameGrid[destinationPos.x, destinationPos.y])
+                {
+                    gameGrid[i, j] = gameGrid[destinationPos.x, destinationPos.y];
+                }
+            }
+        }
         return newState;
     }
     public int GetBlobAtPosition(Vector2Int pos)

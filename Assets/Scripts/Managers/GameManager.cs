@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     static Dictionary<Vector2Int, BlobController> blobs = new Dictionary<Vector2Int, BlobController>();
     static Dictionary<int, GameObject> blobPrefabs = new Dictionary<int, GameObject>();
     static GameState currentGameState;
-    static int n = 7, m = 7;
+    static int n = 8, m = 8;
     #endregion
     private void Start()
     {
@@ -29,9 +29,6 @@ public class GameManager : MonoBehaviour
         controller = enemyBlob.GetComponent<BlobController>();
         controller.Initialize(position);
         blobs.Add(position, controller);
-
-
-        Debug.Log(currentGameState.GetStringHashCode());
     }
 
     //For Human
@@ -49,7 +46,9 @@ public class GameManager : MonoBehaviour
         Vector2Int originalPos = state.FromPosition;
         Vector2Int destinationPos = state.ToPosition;
         currentGameState = state;
-        if(state.LastAction == BlobAction.Copy)
+        Debug.Log(state.FromPosition);
+        Debug.Log(state.ToPosition);
+        if (state.LastAction == BlobAction.Copy)
         {
             //Squash Original Blob
             blobs[state.FromPosition].MakeMove(state.FromPosition, state.LastAction);
@@ -62,7 +61,6 @@ public class GameManager : MonoBehaviour
             blobs.Remove(state.FromPosition);
         }
     }
-
     public static void ShowAvailableMoves(Vector2Int position)
     {
         List<Vector2Int> positions = currentGameState.GetNextMoves(position);
@@ -72,12 +70,12 @@ public class GameManager : MonoBehaviour
     {
         WorldGenerator.NormalizeTiles();
     }
-
     public static void CopyBlob()
     {
         GameObject newBlob = Instantiate(blobPrefabs[currentGameState.GetBlobAtPosition(currentGameState.ToPosition)]);
         BlobController controller = newBlob.GetComponent<BlobController>();
         controller.Initialize(currentGameState.ToPosition);
+        blobs.Add(currentGameState.ToPosition, controller);
         Debug.Log(currentGameState.ToPosition);
     }
 }
