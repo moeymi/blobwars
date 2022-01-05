@@ -43,7 +43,7 @@ public class AI_Controller : MonoBehaviour
                Node optimalState = await MinMaxSolver(depth - 1, newNode, !AI_Trun);
                if (optimalState == null)
                {
-                   newNode.state.calculateCost();
+                   newNode.state.evaluate();
                }
                else
                {

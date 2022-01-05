@@ -203,13 +203,14 @@ public class GameState
             {
                 if (gameGrid[i, j] == 0)
                 {
-                    if (j != 0 && gameGrid[i -1, j] == player)
+                    if (i != 0 && gameGrid[i -1, j] == player)
                         Gaps++;
-                    if (j != m - 1 && gameGrid[i+1, j] == player)
+                    if (i != n - 1 && gameGrid[i+1, j] == player)
                         Gaps++;
                 }
             }
         }
+        Debug.Log(Gaps);
 
         return myUnits - enemyUnits;
 
