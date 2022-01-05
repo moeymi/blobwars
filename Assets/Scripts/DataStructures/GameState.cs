@@ -117,6 +117,31 @@ public class GameState
         }
         return str;
     }
+    public List<GameState> getNextStates()
+    {
+        List<GameState> states = new List<GameState>();
+
+        int player = gameGrid[fromPosition.x, fromPosition.y] ; 
+
+        for (int i =0; i < n; i++)
+        {
+            for (int j =0; j < m; j++)
+            {
+                if (gameGrid[i,j] == player)
+                {
+                    List<Vector2Int> positions = new List<Vector2Int>();
+                    positions = GetNextMoves(new Vector2Int(i,j)); 
+                    for (int k =0; k < positions.Count; k++)
+                    {
+                        states.Add(MakeMove(new Vector2Int(i, j), positions[k], player == -1)); 
+                    }
+
+                }
+            }
+        }
+
+        return states;
+    }
     public BlobAction LastAction
     {
         get { return lastAction; }
