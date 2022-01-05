@@ -137,4 +137,56 @@ public class GameState
     {
         get { return changedBlobs; }
     }
+
+    public int evaluate()
+    {
+        int player = gameGrid[fromPosition.x, fromPosition.y];
+        int myUnits = 0;
+        int enemyUnits = 0;
+        //getNumberOfBlobsForEachPlayer
+        for(int i = 0 ; i<n ; i++)
+        {
+            for(int j = 0; j<m ; j++)
+            {
+                if (gameGrid[i, j] == player)
+                    myUnits++;
+                else if (gameGrid[i, j] == player*-1)
+                    enemyUnits++;
+            }
+        }
+
+        //GET THE GAPS
+        int Gaps = 0;
+        //ForROWS
+        for (int i = 0; i<n ; i++)
+        {
+            for(int j=0; j<m; j++)
+            {
+                if(gameGrid[i,j] == 0)
+                {
+                    if (j != 0 && gameGrid[i, j-1] == player)
+                        Gaps++;
+                    if (j != m - 1 && gameGrid[i, j+1] == player)
+                        Gaps++;
+                }
+            }
+        }
+        //ForColumns
+        for(int j = 0; j < m;j++)
+        {
+            for(int i =0; i < n; i++)
+            {
+                if (gameGrid[i, j] == 0)
+                {
+                    if (j != 0 && gameGrid[i -1, j] == player)
+                        Gaps++;
+                    if (j != m - 1 && gameGrid[i+1, j] == player)
+                        Gaps++;
+                }
+            }
+        }
+
+        return myUnits - enemyUnits;
+
+    }
 }
