@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     static Dictionary<Vector2Int, BlobController> blobs = new Dictionary<Vector2Int, BlobController>();
     static Dictionary<int, GameObject> blobPrefabs = new Dictionary<int, GameObject>();
     static GameState currentGameState;
+    static AI_Controller ai_Controller = new AI_Controller(); 
     static int n = 8, m = 8;
     #endregion
     private void Start()
@@ -97,5 +98,9 @@ public class GameManager : MonoBehaviour
     public static GameState CurrentGamestate
     {
         get { return currentGameState; }
+    }
+    public static AI_Controller AIController
+    {
+        get { return ai_Controller; }
     }
 }

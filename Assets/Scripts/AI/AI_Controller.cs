@@ -3,14 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class AI_Controller : MonoBehaviour
+public class AI_Controller
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     async public void AIMakeMove()
     {
         float stTime = (Time.realtimeSinceStartup);
@@ -19,9 +13,10 @@ public class AI_Controller : MonoBehaviour
         Node selectedNode = null;
         await Task.Run( async () =>
         {
-            selectedNode = await MinMaxSolver(3, new Node (GameManager.CurrentGamestate , null), true);
-            return 0;
+            selectedNode = await MinMaxSolver(1, new Node (GameManager.CurrentGamestate , null), false);
         });
+        Debug.LogWarning("FOUND STATEEEE");
+        Debug.LogWarning(selectedNode.state.ToPosition);
         if (selectedNode != null)
             GameManager.RunIntoState(selectedNode.state);
 
@@ -53,8 +48,8 @@ public class AI_Controller : MonoBehaviour
                nextNodes.Add(newNode);
            }
 
-           Node selectedNode = new Node(null, null);
-           int compareValue = AI_Trun ? int.MinValue : int.MaxValue;
+           Node selectedNode = new Node();
+           int compareValue = !AI_Trun ? int.MinValue : int.MaxValue;
            foreach (Node node in nextNodes)
            {
                if (AI_Trun)
@@ -82,6 +77,7 @@ public class AI_Controller : MonoBehaviour
         public GameState state;
         public Node prevoiusNode;
         public int cost = 0; 
+        public Node() { }
         public Node (GameState currentState , Node prevoiusNode)
         {
             this.state = currentState;

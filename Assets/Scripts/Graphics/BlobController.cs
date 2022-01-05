@@ -45,6 +45,7 @@ public class BlobController : MonoBehaviour
             Vector3Int newPos = tileMap.WorldToCell(mousePosition);
             GameManager.TryMove(currentPos, new Vector2Int(newPos.y, newPos.x));
             UnSelect();
+            GameManager.AIController.AIMakeMove(); 
         }
     }
 
