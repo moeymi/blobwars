@@ -16,7 +16,8 @@ public class GameManager : MonoBehaviour
     #endregion
     private void Start()
     {
-        WorldGenerator.GenerateWorld(n, m); 
+        WorldGenerator.GenerateWorld(n, m);
+        canMove = true;
         blobPrefabs = new Dictionary<int, GameObject>();
         blobs = new Dictionary<Vector2Int, BlobController>();
         blobPrefabs.Add(1, Resources.Load<GameObject>("Prefabs/Blob"));

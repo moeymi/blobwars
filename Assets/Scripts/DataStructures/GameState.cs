@@ -182,37 +182,6 @@ public class GameState
                     enemyBlobs++;
             }
         }
-
-        //Get gaps
-        int Gaps = 0;
-        //Rows
-        for (int i = 0; i<n ; i++)
-        {
-            for(int j=0; j<m; j++)
-            {
-                if(gameGrid[i,j] == 0)
-                {
-                    if (j != 0 && gameGrid[i, j-1] == 1)
-                        Gaps++;
-                    if (j != m - 1 && gameGrid[i, j+1] == -1)
-                        Gaps++;
-                }
-            }
-        }
-        //Columns
-        for(int j = 0; j < m;j++)
-        {
-            for(int i =0; i < n; i++)
-            {
-                if (gameGrid[i, j] == 0)
-                {
-                    if (i != 0 && gameGrid[i -1, j] == 1)
-                        Gaps++;
-                    if (i != n - 1 && gameGrid[i+1, j] == -1)
-                        Gaps++;
-                }
-            }
-        }
         if (enemyBlobs == 0)
             playerBlobs += 100;
         if (playerBlobs == 0)
