@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -91,10 +92,10 @@ public class BlobController : MonoBehaviour
     }
     private void OnMouseUp()
     {
-        Select();
+        if (GameManager.CanMove)
+            Select();
     }
-
-    void AIAction()
+    async void AIAction()
     {
         if (action == BlobAction.Copy)
         {
@@ -102,6 +103,8 @@ public class BlobController : MonoBehaviour
         }
         else
             MoveSelf();
+        await Task.Delay(340);
+        GameManager.FinishAI();
     }
     void MoveSelf()
     {

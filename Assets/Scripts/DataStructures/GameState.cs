@@ -8,7 +8,7 @@ public class GameState
     int[,] gameGrid;
     Vector2Int fromPosition, toPosition;
     BlobAction lastAction;
-    List<Vector2Int> changedBlobs;
+    List<Vector2Int> changedBlobs = new List<Vector2Int>();
     #endregion
 
     public GameState(int n, int m)
@@ -18,6 +18,8 @@ public class GameState
         gameGrid = new int[n, m];
         gameGrid[n - 1, 0] = 1;
         gameGrid[0, m - 1] = -1;
+        fromPosition = new Vector2Int(0, m - 1);
+        toPosition = new Vector2Int(0, m - 1);
 
     }
 
@@ -29,6 +31,7 @@ public class GameState
         lastAction = state.lastAction;
         fromPosition = state.fromPosition;
         toPosition = state.toPosition;
+        changedBlobs = new List<Vector2Int>(state.changedBlobs);
     }
 
     public bool CheckMoveAllowed(Vector2Int originalPos, Vector2Int destinationPos)
@@ -50,7 +53,7 @@ public class GameState
                 Mathf.Abs(originalPos.x - destinationPos.x),
                 Mathf.Abs(originalPos.y - destinationPos.y)
             );
-        if (difference >= 2)
+        if (difference == 2)
         {
             newState.SetBlob(destinationPos, isEnemy);
             newState.RemoveBlob(originalPos);
@@ -62,13 +65,14 @@ public class GameState
             newState.lastAction = BlobAction.Copy;
         }
         newState.changedBlobs = new List<Vector2Int>();
-        for (int i = destinationPos.x - 1; i <= destinationPos.x + 2; i++)
+        for (int i = destinationPos.x - 1; i <= destinationPos.x + 1; i++)
         {
-            for (int j = destinationPos.y - 1; j <= destinationPos.y + 2; j++)
+            for (int j = destinationPos.y - 1; j <= destinationPos.y + 1; j++)
             {
                 if (i >= 0 && i < n && j >= 0 && j < m && newState.gameGrid[i, j] != 0 && newState.gameGrid[i, j] != newState.gameGrid[destinationPos.x, destinationPos.y])
                 {
-                    newState.gameGrid[i, j] = gameGrid[destinationPos.x, destinationPos.y];
+                    newState.SetBlob(new Vector2Int(i, j), newState.gameGrid[destinationPos.x, destinationPos.y] == -1);
+                    newState.gameGrid[i, j] = newState.gameGrid[destinationPos.x, destinationPos.y];
                     newState.changedBlobs.Add(new Vector2Int(i, j));
                 }
             }
@@ -121,7 +125,7 @@ public class GameState
     {
         List<GameState> states = new List<GameState>();
 
-        int player = gameGrid[fromPosition.x, fromPosition.y] == 1 ? -1 : 1 ; 
+        int player = gameGrid[toPosition.x, toPosition.y] == 1 ? -1 : 1;
 
         for (int i =0; i < n; i++)
         {
@@ -167,7 +171,7 @@ public class GameState
     {
         int playerBlobs = 0;
         int enemyBlobs = 0;
-        //getNumberOfBlobsForEachPlayer
+        //Get Number of blobs for each player
         for(int i = 0 ; i<n ; i++)
         {
             for(int j = 0; j<m ; j++)
@@ -179,9 +183,9 @@ public class GameState
             }
         }
 
-        //GET THE GAPS
+        //Get gaps
         int Gaps = 0;
-        //ForROWS
+        //Rows
         for (int i = 0; i<n ; i++)
         {
             for(int j=0; j<m; j++)
@@ -195,7 +199,7 @@ public class GameState
                 }
             }
         }
-        //ForColumns
+        //Columns
         for(int j = 0; j < m;j++)
         {
             for(int i =0; i < n; i++)
@@ -209,8 +213,29 @@ public class GameState
                 }
             }
         }
-        //Debug.Log(Gaps);
+        if (enemyBlobs == 0)
+            playerBlobs += 100;
+        if (playerBlobs == 0)
+            enemyBlobs += 100;
         return enemyBlobs - playerBlobs;
+    }
 
+    public int GetBlobNum(bool isEnemy) 
+    {
+        int playerBlobs = 0, enemyBlobs = 0;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                if (gameGrid[i, j] == 1)
+                    playerBlobs++;
+                else if (gameGrid[i, j] == -1)
+                    enemyBlobs++;
+            }
+        }
+        if (isEnemy)
+            return enemyBlobs;
+        else
+            return playerBlobs;
     }
 }

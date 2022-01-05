@@ -13,75 +13,68 @@ public class AI_Controller
         Node selectedNode = null;
         await Task.Run( async () =>
         {
-            selectedNode = await MinMaxSolver(1, new Node (state , null), true);
+            selectedNode = await MinMaxSolver(2, new Node (state), true);
         });
-
         if (selectedNode != null)
-            GameManager.RunIntoState(selectedNode.state);
+            GameManager.RunIntoState(selectedNode.nextState);
 
         Debug.LogWarning("FINISH");
         Debug.LogWarning("Time = " + (Time.realtimeSinceStartup - stTime));
 
     }
 
-    async Task<Node> MinMaxSolver(int depth , Node currentState , bool AI_Trun )
+    async Task<Node> MinMaxSolver(int depth , Node currentNode , bool AI_Trun )
     {
-        if (depth == 0)
-            return null;
         return await Task.Run(async () =>
         {
-           List<GameState> nextStates = currentState.state.getNextStates();
-           List<Node> nextNodes = new List<Node>();
-           foreach (GameState state in nextStates)
-           {
-               Node newNode = new Node(state, currentState);
-               Node optimalState = await MinMaxSolver(depth - 1, newNode, !AI_Trun);
-               if (optimalState == null)
-               {
-                   newNode.cost = newNode.state.evaluate();
-               }
-               else
-               {
-                   newNode.cost = optimalState.cost;
-               }
-
-               nextNodes.Add(newNode);
-           }
-
-           Node selectedNode = new Node();
-           int compareValue = AI_Trun ? int.MinValue : int.MaxValue;
-           foreach (Node node in nextNodes)
-           {
-               if (AI_Trun)
-               {
-                   if (node.cost > compareValue)
-                   {
-                       selectedNode = node;
-                       compareValue = selectedNode.cost;
-                   }
-               }
-               else
-               {
-                   if (node.cost < compareValue)
-                   {
-                       selectedNode = node;
-                       compareValue = selectedNode.cost;
-                   }
-               }
-           }
-           return selectedNode;
+            List<GameState> nextStates = currentNode.state.getNextStates();
+            if (depth == 0 || nextStates.Count == 0)
+            {
+                currentNode.cost = currentNode.state.evaluate();
+                return currentNode;
+            }
+            currentNode.cost = AI_Trun ? int.MinValue : int.MaxValue;
+            foreach (GameState state in nextStates)
+            {
+                Node newNode = new Node(state);
+                Node nextNode = await MinMaxSolver(depth - 1, newNode, !AI_Trun);
+                if (depth == 3)
+                {
+                    ;
+                }
+                if (AI_Trun)
+                {
+                    if (currentNode.cost < nextNode.cost)
+                    {
+                        currentNode.nextState = nextNode.state;
+                        currentNode.cost = nextNode.cost;
+                    }
+                }
+                else
+                {
+                    if (currentNode.cost > nextNode.cost)
+                    {
+                        currentNode.nextState = nextNode.state;
+                        currentNode.cost = nextNode.cost;
+                    }
+                }
+            }
+            if(depth == 3)
+            {
+                ;
+            }
+            return currentNode;
        });
     }
     public class Node
     {
         public GameState state;
-        public Node prevoiusNode;
+        public GameState nextState;
         public int cost = 0; 
         public Node() { }
-        public Node (GameState currentState , Node prevoiusNode)
+        public Node (GameState currentState)
         {
             this.state = currentState;
-            this.prevoiusNode = prevoiusNode;
         }
     } 
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,16 +10,23 @@ public class GameManager : MonoBehaviour
     static Dictionary<int, GameObject> blobPrefabs = new Dictionary<int, GameObject>();
     static GameState currentGameState;
     static AI_Controller ai_Controller = new AI_Controller(); 
-    static int n = 8, m = 8;
+    static int n = 7, m = 7;
+    static bool canMove = true;
+    static Transform blobsParent;
     #endregion
     private void Start()
     {
-        WorldGenerator.GenerateWorld(n, m);
+        WorldGenerator.GenerateWorld(n, m); 
+        blobPrefabs = new Dictionary<int, GameObject>();
+        blobs = new Dictionary<Vector2Int, BlobController>();
         blobPrefabs.Add(1, Resources.Load<GameObject>("Prefabs/Blob"));
         blobPrefabs.Add(-1, Resources.Load<GameObject>("Prefabs/EnemyBlob"));
         currentGameState = new GameState(n, m);
+        blobsParent = GameObject.FindGameObjectWithTag("BlobsParent").transform;
+
         //First Blob
         GameObject firstBlob = Instantiate(blobPrefabs[1]);
+        firstBlob.transform.SetParent(blobsParent);
         Vector2Int position = new Vector2Int(n - 1, 0);
         BlobController controller = firstBlob.GetComponent<BlobController>();
         controller.Initialize(position);
@@ -26,10 +34,12 @@ public class GameManager : MonoBehaviour
 
         //Second Blob
         GameObject enemyBlob = Instantiate(blobPrefabs[-1]);
+        enemyBlob.transform.SetParent(blobsParent);
         position = new Vector2Int(0, m-1);
         controller = enemyBlob.GetComponent<BlobController>();
         controller.Initialize(position);
         blobs.Add(position, controller);
+
     }
 
     //For Human
@@ -45,6 +55,13 @@ public class GameManager : MonoBehaviour
 
     public static void RunIntoState(GameState state)
     {
+        if (state == null)
+        {
+            Endgame();
+            return;
+        }
+        canMove = false;
+        Debug.Log(state);
         Vector2Int originalPos = state.FromPosition;
         Vector2Int destinationPos = state.ToPosition;
         currentGameState = state;
@@ -60,7 +77,8 @@ public class GameManager : MonoBehaviour
             blobs.Add(state.ToPosition, blobs[state.FromPosition]);
             blobs.Remove(state.FromPosition);
         }
-        Debug.Log(currentGameState.FromPosition + " " + currentGameState.ToPosition);
+        GameObject.FindGameObjectWithTag("PlayerBlobs").GetComponent<TextMeshProUGUI>().text = currentGameState.GetBlobNum(false).ToString();
+        GameObject.FindGameObjectWithTag("AIBlobs").GetComponent<TextMeshProUGUI>().text = currentGameState.GetBlobNum(true).ToString();
     }
     public static void ShowAvailableMoves(Vector2Int position)
     {
@@ -74,12 +92,11 @@ public class GameManager : MonoBehaviour
     public static void CopyBlob()
     {
         GameObject newBlob = Instantiate(blobPrefabs[currentGameState.GetBlobAtPosition(currentGameState.ToPosition)]);
+        newBlob.transform.SetParent(blobsParent);
         BlobController controller = newBlob.GetComponent<BlobController>();
         controller.Initialize(currentGameState.ToPosition);
         blobs.Add(currentGameState.ToPosition, controller);
-        Debug.Log(currentGameState.ToPosition);
     }
-
     public static void TakeOver()
     {
         List<Vector2Int> changedBlobs = currentGameState.ChangedBlobs;
@@ -87,7 +104,6 @@ public class GameManager : MonoBehaviour
         {
             if (blobs.ContainsKey(pos))
             {
-                Debug.Log("Here : " + pos.ToString());
                 Destroy(blobs[pos].gameObject);
                 GameObject newBlob = Instantiate(blobPrefabs[currentGameState.GetBlobAtPosition(currentGameState.ToPosition)]);
                 BlobController controller = newBlob.GetComponent<BlobController>();
@@ -97,6 +113,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public static void FinishAI()
+    {
+        canMove = true;
+        if (currentGameState.getNextStates().Count == 0)
+            Endgame();
+    }
+
     public static GameState CurrentGamestate
     {
         get { return currentGameState; }
@@ -104,5 +127,15 @@ public class GameManager : MonoBehaviour
     public static AI_Controller AIController
     {
         get { return ai_Controller; }
+    }
+    public static bool CanMove
+    {
+        get { return canMove; }
+    }
+
+    public static void Endgame()
+    {
+        int difference = currentGameState.evaluate();
+        UIManager.EndGame(difference);
     }
 }
