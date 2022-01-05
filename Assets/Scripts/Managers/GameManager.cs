@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     static Dictionary<int, GameObject> blobPrefabs = new Dictionary<int, GameObject>();
     static GameState currentGameState;
     static AI_Controller ai_Controller = new AI_Controller(); 
-    static int n = 7, m = 7;
+    static int n = 6, m = 6;
     static bool canMove = true;
     static Transform blobsParent;
     #endregion
@@ -61,7 +61,6 @@ public class GameManager : MonoBehaviour
             return;
         }
         canMove = false;
-        Debug.Log(state);
         Vector2Int originalPos = state.FromPosition;
         Vector2Int destinationPos = state.ToPosition;
         currentGameState = state;
