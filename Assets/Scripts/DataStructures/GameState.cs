@@ -61,7 +61,7 @@ public class GameState
             newState.SetBlob(destinationPos, isEnemy);
             newState.lastAction = BlobAction.Copy;
         }
-        changedBlobs = new List<Vector2Int>();
+        newState.changedBlobs = new List<Vector2Int>();
         for (int i = destinationPos.x - 2; i <= destinationPos.x + 2; i++)
         {
             for (int j = destinationPos.y - 2; j <= destinationPos.y + 2; j++)
