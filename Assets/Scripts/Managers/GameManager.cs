@@ -60,6 +60,12 @@ public class GameManager : MonoBehaviour
             blobs.Add(state.ToPosition, blobs[state.FromPosition]);
             blobs.Remove(state.FromPosition);
         }
+        int[,] gameGrid = state.GameGrid;
+        List<Vector2Int> changedBlobs = state.ChangedBlobs;
+        foreach(Vector2Int pos in changedBlobs)
+        {
+
+        }
     }
     public static void ShowAvailableMoves(Vector2Int position)
     {
@@ -77,5 +83,10 @@ public class GameManager : MonoBehaviour
         controller.Initialize(currentGameState.ToPosition);
         blobs.Add(currentGameState.ToPosition, controller);
         Debug.Log(currentGameState.ToPosition);
+    }
+
+    public static GameState CurrentGamestate
+    {
+        get { return currentGameState; }
     }
 }
