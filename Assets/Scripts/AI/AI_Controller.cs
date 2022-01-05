@@ -13,10 +13,9 @@ public class AI_Controller
         Node selectedNode = null;
         await Task.Run( async () =>
         {
-            selectedNode = await MinMaxSolver(1, new Node (GameManager.CurrentGamestate , null), false);
+            selectedNode = await MinMaxSolver(1, new Node (GameManager.CurrentGamestate , null), true);
         });
-        Debug.LogWarning("FOUND STATEEEE");
-        Debug.LogWarning(selectedNode.state.ToPosition);
+
         if (selectedNode != null)
             GameManager.RunIntoState(selectedNode.state);
 
@@ -49,12 +48,12 @@ public class AI_Controller
            }
 
            Node selectedNode = new Node();
-           int compareValue = !AI_Trun ? int.MinValue : int.MaxValue;
+           int compareValue = AI_Trun ? int.MaxValue : int.MinValue;
            foreach (Node node in nextNodes)
            {
                if (AI_Trun)
                {
-                   if (compareValue > node.cost)
+                   if (node.cost < compareValue)
                    {
                        selectedNode = node;
                        compareValue = selectedNode.cost;
@@ -62,7 +61,7 @@ public class AI_Controller
                }
                else
                {
-                   if (compareValue < node.cost)
+                   if (node.cost > compareValue)
                    {
                        selectedNode = node;
                        compareValue = selectedNode.cost;
