@@ -8,7 +8,7 @@ public class GameState
     int[,] gameGrid;
     Vector2Int fromPosition, toPosition;
     BlobAction lastAction;
-
+    List<Vector2Int> changedBlobs;
     #endregion
 
     public GameState(int n, int m)
@@ -61,6 +61,7 @@ public class GameState
             newState.SetBlob(destinationPos, isEnemy);
             newState.lastAction = BlobAction.Copy;
         }
+        changedBlobs = new List<Vector2Int>();
         for (int i = destinationPos.x - 2; i <= destinationPos.x + 2; i++)
         {
             for (int j = destinationPos.y - 2; j <= destinationPos.y + 2; j++)
@@ -68,6 +69,7 @@ public class GameState
                 if (CheckMoveAllowed(destinationPos, new Vector2Int(i,j)) && gameGrid[i, j] != 0 && gameGrid[i, j] != gameGrid[destinationPos.x, destinationPos.y])
                 {
                     gameGrid[i, j] = gameGrid[destinationPos.x, destinationPos.y];
+                    changedBlobs.Add(new Vector2Int(i, j));
                 }
             }
         }
@@ -126,5 +128,13 @@ public class GameState
     public Vector2Int ToPosition
     {
         get { return toPosition; }
+    }
+    public int[,] GameGrid
+    {
+        get { return gameGrid; }
+    }
+    public List<Vector2Int> ChangedBlobs
+    {
+        get { return changedBlobs; }
     }
 }
