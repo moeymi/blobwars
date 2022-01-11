@@ -45,7 +45,8 @@ public class BlobController : MonoBehaviour
     {
         if (shouldMove && action != null)
         {
-            AIAction();
+            //AIAction();
+            //Debug.Log("Enter1");
             shouldMove = false;
             action = null;
         }
@@ -70,7 +71,10 @@ public class BlobController : MonoBehaviour
         this.action = action;
         if (action == BlobAction.Move)
         {
-            animationEvent.functionName = "MoveSelf";
+            if(isEnemy)
+                animationEvent.functionName = "AIAction";
+            else
+                animationEvent.functionName = "MoveSelf";
             foreach (AnimationClip clip in animator.runtimeAnimatorController.animationClips)
                 if (clip.name == "Squash")
                 {
@@ -80,7 +84,10 @@ public class BlobController : MonoBehaviour
         }
         else
         {
-            animationEvent.functionName = "CopySelf";
+            if (isEnemy)
+                animationEvent.functionName = "AIAction";
+            else
+                animationEvent.functionName = "CopySelf";
             foreach (AnimationClip clip in animator.runtimeAnimatorController.animationClips)
                 if (clip.name == "Squash")
                 {
