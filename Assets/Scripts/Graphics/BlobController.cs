@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -8,20 +6,21 @@ public class BlobController : MonoBehaviour
 {
     #region Attributes
 
-    [SerializeField]
-    bool isEnemy;
-    [SerializeField]
-    bool isSelected = false;
-    [SerializeField]
-    bool shouldMove = false;
+    [SerializeField] bool isEnemy;
+    [SerializeField] bool isSelected = false;
+    [SerializeField] bool shouldMove = false;
+    [SerializeField] private GameObject arrowObject;
+    
     Animator animator;
     SpriteRenderer spriteRenderer;
     Vector2Int currentPos;
     Tilemap tileMap;
     BlobAction? action;
+    static bool gotSelectedOnce;
 
     #endregion
 
+    
     public void Initialize(Vector2Int position)
     {
         currentPos = position;
@@ -39,6 +38,7 @@ public class BlobController : MonoBehaviour
     private void Awake()
     {
         Initialize(new Vector2Int(0, 0));
+        if(gotSelectedOnce && arrowObject != null) arrowObject?.SetActive(false);
     }
 
     public void Update()
@@ -110,7 +110,7 @@ public class BlobController : MonoBehaviour
         }
         else
             MoveSelf();
-        await Task.Delay(340);
+        await UniTask.Delay(340);
         GameManager.FinishAI();
     }
     void MoveSelf()
@@ -130,6 +130,8 @@ public class BlobController : MonoBehaviour
         isSelected = true;
         GameManager.ShowAvailableMoves(currentPos);
         animator.SetBool("selected", true);
+        gotSelectedOnce = true;
+        arrowObject?.SetActive(false);
     }
 
     void UnSelect()
